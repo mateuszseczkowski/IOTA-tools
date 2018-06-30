@@ -6,7 +6,7 @@ email_text=""
 db_directory="/var/lib/iri/target/mainnetdb"
 
 if [ "$current_database_space_taken" -gt "$threshold_to_send_email" ] ; then
-    EMAIL_TEXT+='Your root partition remaining free space is critically low';
+    email_text+='Your root partition remaining free space is critically low';
 	echo "Remaining free space is critically low.";
 fi
 
