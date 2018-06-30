@@ -1,32 +1,32 @@
 #!/bin/bash
-CURRENT_DATABASE_SPACE_TAKEN=$(df / | grep / | awk '{ print $5}' | sed 's/%//g')
-THRESHOLD_TO_SEND_EMAIL=90
-THRESHOLD_TO_DELETE_DB=93
-EMAIL_TEXT=""
-DB_DIRECTORY="/var/lib/iri/target/mainnetdb"
+current_database_space_taken=$(df / | grep / | awk '{ print $5}' | sed 's/%//g')
+threshold_to_send_email=90
+threshold_to_delete_db=93
+email_text=""
+db_directory="/var/lib/iri/target/mainnetdb"
 
-if [ "$CURRENT_DATABASE_SPACE_TAKEN" -gt "$THRESHOLD_TO_SEND_EMAIL" ] ; then
+if [ "$current_database_space_taken" -gt "$threshold_to_send_email" ] ; then
     EMAIL_TEXT+='Your root partition remaining free space is critically low';
 	echo "Remaining free space is critically low.";
 fi
 
-if [ "$CURRENT_DATABASE_SPACE_TAKEN" -gt "$THRESHOLD_TO_DELETE_DB" ] && [ -d "$DB_DIRECTORY" ] ; then
-	EMAIL_TEXT+='. \n Need to delete database occured.';
+if [ "$current_database_space_taken" -gt "$threshold_to_delete_db" ] && [ -d "$db_directory" ] ; then
+	email_text+='. \n Need to delete database occured.';
 	echo "Removing database...";
-	echo "`systemctl \stop iri && rm -r $DB_DIRECTORY && systemctl start iri`"
-	if [ ! -d "$DB_DIRECTORY" ]; then
+	echo "`systemctl \stop iri && rm -r $db_directory && systemctl start iri`"
+	if [ ! -d "$db_directory" ]; then
 		echo "Database removed.";
-		EMAIL_TEXT+=' Database has been removed.'
+		email_text+=' Database has been removed.'
 	fi
 fi
 
-if [ ! -z "$EMAIL_TEXT" ] ; then
+if [ ! -z "$email_text" ] ; then
 	echo "Sending email...";
 	mail -s 'Disk Space Alert IotaFieldNode_ms2' youremailaddress@example.com << EOF
-$EMAIL_TEXT. Used: $CURRENT_DATABASE_SPACE_TAKEN%
+$email_text. Used: $CURRENT_DATABASE_SPACE_TAKEN%
 EOF
 	echo "Email sent."
 else 
 	echo "`logger FreeSpaceChecker: root partition remaining free space is sufficient.`";
-	echo "Root partition remaining free space is sufficient and is: $CURRENT_DATABASE_SPACE_TAKEN";
+	echo "Root partition remaining free space is sufficient and is: $current_database_space_taken";
 fi
