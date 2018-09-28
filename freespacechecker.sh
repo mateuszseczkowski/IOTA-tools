@@ -28,5 +28,5 @@ EOF
 	echo "Email sent."
 else 
 	echo "`logger FreeSpaceChecker: root partition remaining free space is sufficient.`";
-	echo "Root partition remaining free space is sufficient and is: $current_database_space_taken";
+	echo "Root partition remaining free space is sufficient: $((100 - $current_database_space_taken))%";
 fi
